@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block breadcrumb %}Products{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Product Catalogue</h1>
+    <p class="page-subtitle">{{ products|length }} products available</p>
+  </div>
+  <a href="{{ url_for('products.new_product') }}" class="btn btn-primary" id="btn-add-product">+ Add Product</a>
+</section>
+
+<!-- Category filter -->
+<div class="filter-bar">
+  <a href="{{ url_for('products.list_products') }}" class="filter-chip {% if not selected %}active{% endif %}">All</a>
+  {% for cat in categories %}
+  <a href="{{ url_for('products.list_products', category=cat) }}" class="filter-chip {% if selected == cat %}active{% endif %}">{{ cat }}</a>
+  {% endfor %}
+</div>
+
+<div class="product-grid" id="product-grid">
+  {% for p in products %}
+  <div class="product-card" data-product-id="{{ p.id }}">
+    <div class="product-image-wrap">
+      <img src="{{ p.image_url }}" alt="{{ p.name }}" class="product-img" onerror="this.src='/static/img/placeholder.svg'" />
+    </div>
+    <div class="product-body">
+      <span class="product-category">{{ p.category }}</span>
+      <h3 class="product-name">{{ p.name }}</h3>
+      <p class="product-desc">{{ p.description|truncate(80) }}</p>
+      <div class="product-footer">
+        <span class="product-price">${{ "%.2f"|format(p.price) }}</span>
+        <span class="product-stock {% if p.stock == 0 %}stock-zero{% elif p.stock < 5 %}stock-low{% endif %}">
+          {% if p.stock == 0 %}Out of stock{% else %}{{ p.stock }} in stock{% endif %}
+        </span>
+      </div>
+    </div>
+    <div class="product-actions">
+      <a href="{{ url_for('products.product_detail', product_id=p.id) }}" class="btn btn-sm btn-outline">View</a>
+      <a href="{{ url_for('products.edit_product', product_id=p.id) }}" class="btn btn-sm btn-secondary">Edit</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-state-large">
+    <p>No products found. <a href="{{ url_for('products.new_product') }}">Add your first product →</a></p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

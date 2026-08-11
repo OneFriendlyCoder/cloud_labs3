@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Welcome to ShopEasy</h1>
+    <p class="page-subtitle">Your cloud-native storefront running on AWS EC2 + EBS</p>
+  </div>
+</section>
+
+<!-- ── KPI cards ─────────────────────────────────────────────────────────── -->
+<div class="kpi-grid">
+  <div class="kpi-card kpi-blue">
+    <div class="kpi-icon">📦</div>
+    <div class="kpi-body">
+      <span class="kpi-value" id="kpi-products">{{ total_products }}</span>
+      <span class="kpi-label">Total Products</span>
+    </div>
+  </div>
+  <div class="kpi-card kpi-purple">
+    <div class="kpi-icon">🛍️</div>
+    <div class="kpi-body">
+      <span class="kpi-value" id="kpi-orders">{{ total_orders }}</span>
+      <span class="kpi-label">Total Orders</span>
+    </div>
+  </div>
+  <div class="kpi-card kpi-green">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-body">
+      <span class="kpi-value">—</span>
+      <span class="kpi-label">Total Revenue</span>
+    </div>
+  </div>
+  <div class="kpi-card kpi-orange">
+    <div class="kpi-icon">⏳</div>
+    <div class="kpi-body">
+      <span class="kpi-value">{{ pending_orders }}</span>
+      <span class="kpi-label">Pending Orders</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Two-column grid ───────────────────────────────────────────────────── -->
+<div class="two-col-grid">
+  <!-- Recent orders -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">🕐 Recent Orders</h2>
+      <a href="{{ url_for('orders.list_orders') }}" class="link-more">View all →</a>
+    </div>
+    <div class="card-body">
+      {% if recent_orders %}
+        <table class="table" id="recent-orders-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+            <tr>
+              <td><a href="{{ url_for('orders.order_detail', order_id=order.id) }}">#{{ order.id }}</a></td>
+              <td>{{ order.customer_name }}</td>
+              <td>${{ "%.2f"|format(order.total_amount) }}</td>
+              <td><span class="badge badge-status badge-{{ order.status }}">{{ order.status }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty-state">No orders yet. <a href="{{ url_for('orders.new_order') }}">Place the first one →</a></p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Low stock -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">⚠️ Low Stock</h2>
+      <a href="{{ url_for('products.list_products') }}" class="link-more">Manage →</a>
+    </div>
+    <div class="card-body">
+      {% if low_stock %}
+        <ul class="low-stock-list" id="low-stock-list">
+          {% for p in low_stock %}
+          <li class="low-stock-item">
+            <span class="low-stock-name">{{ p.name }}</span>
+            <span class="low-stock-qty {% if p.stock == 0 %}qty-zero{% endif %}">{{ p.stock }} left</span>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty-state">✅ All products are well-stocked.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

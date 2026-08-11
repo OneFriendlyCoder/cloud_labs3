@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}New Order{% endblock %}
+{% block breadcrumb %}<a href="{{ url_for('orders.list_orders') }}">Orders</a> / New{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h1 class="page-title">Place New Order</h1>
+</section>
+
+<div class="form-card">
+  <form method="POST" action="{{ url_for('orders.new_order') }}" id="new-order-form">
+    <h2 class="form-section-title">Customer Details</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="customer_name" class="form-label">Full Name <span class="required">*</span></label>
+        <input type="text" id="customer_name" name="customer_name" class="form-input" placeholder="Jane Doe" required />
+      </div>
+      <div class="form-group">
+        <label for="customer_email" class="form-label">Email <span class="required">*</span></label>
+        <input type="email" id="customer_email" name="customer_email" class="form-input" placeholder="jane@example.com" required />
+      </div>
+    </div>
+
+    <h2 class="form-section-title">Select Products</h2>
+    {% if products %}
+    <div class="order-product-list" id="order-product-list">
+      {% for p in products %}
+      <div class="order-product-row">
+        <div class="order-product-info">
+          <span class="order-product-name">{{ p.name }}</span>
+          <span class="order-product-price">${{ "%.2f"|format(p.price) }}</span>
+          <span class="order-product-stock text-muted">{{ p.stock }} available</span>
+        </div>
+        <div class="order-qty-wrap">
+          <label for="qty_{{ p.id }}" class="form-label">Qty</label>
+          <input
+            type="number"
+            id="qty_{{ p.id }}"
+            name="qty_{{ p.id }}"
+            class="form-input qty-input"
+            min="0"
+            max="{{ p.stock }}"
+            value="0"
+            data-price="{{ p.price }}"
+            oninput="updateTotal()"
+          />
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="order-total-bar">
+      <span class="order-total-label">Order Total:</span>
+      <span class="order-total-value" id="order-total">$0.00</span>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('orders.list_orders') }}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary" id="btn-place-order">Place Order</button>
+    </div>
+    {% else %}
+    <p class="empty-state">No products in stock. <a href="{{ url_for('products.new_product') }}">Add products first →</a></p>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updateTotal() {
+  let total = 0;
+  document.querySelectorAll(".qty-input").forEach(input => {
+    const qty = parseInt(input.value) || 0;
+    const price = parseFloat(input.dataset.price) || 0;
+    total += qty * price;
+  });
+  document.getElementById("order-total").textContent = "$" + total.toFixed(2);
+}
+</script>
+{% endblock %}

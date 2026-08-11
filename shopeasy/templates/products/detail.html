@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block breadcrumb %}<a href="{{ url_for('products.list_products') }}">Products</a> / {{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h1 class="page-title">{{ product.name }}</h1>
+  <div class="header-actions">
+    <a href="{{ url_for('products.edit_product', product_id=product.id) }}" class="btn btn-secondary" id="btn-edit-product">Edit</a>
+    <form method="POST" action="{{ url_for('products.delete_product', product_id=product.id) }}" onsubmit="return confirm('Delete this product?');" style="display:inline;">
+      <button type="submit" class="btn btn-danger" id="btn-delete-product">Delete</button>
+    </form>
+  </div>
+</section>
+
+<div class="detail-grid">
+  <div class="detail-image-col">
+    <div class="detail-image-wrap">
+      <img src="{{ product.image_url }}" alt="{{ product.name }}" class="detail-img" onerror="this.src='/static/img/placeholder.svg'" />
+    </div>
+  </div>
+  <div class="detail-info-col">
+    <div class="detail-meta">
+      <span class="product-category">{{ product.category }}</span>
+    </div>
+    <p class="detail-description">{{ product.description }}</p>
+    <div class="detail-stats">
+      <div class="detail-stat">
+        <span class="stat-label">Price</span>
+        <span class="stat-value price-value">${{ "%.2f"|format(product.price) }}</span>
+      </div>
+      <div class="detail-stat">
+        <span class="stat-label">Stock</span>
+        <span class="stat-value {% if product.stock == 0 %}stock-zero{% elif product.stock < 5 %}stock-low{% endif %}">{{ product.stock }}</span>
+      </div>
+      <div class="detail-stat">
+        <span class="stat-label">Added</span>
+        <span class="stat-value">{{ product.created_at.strftime('%b %d, %Y') }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

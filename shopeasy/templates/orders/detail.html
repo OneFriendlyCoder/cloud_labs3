@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block breadcrumb %}<a href="{{ url_for('orders.list_orders') }}">Orders</a> / #{{ order.id }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Order #{{ order.id }}</h1>
+    <span class="badge badge-status badge-{{ order.status }} badge-lg">{{ order.status }}</span>
+  </div>
+  <form method="POST" action="{{ url_for('orders.delete_order', order_id=order.id) }}" onsubmit="return confirm('Delete this order?');">
+    <button type="submit" class="btn btn-danger" id="btn-delete-order">Delete Order</button>
+  </form>
+</section>
+
+<div class="two-col-grid">
+  <!-- Order info -->
+  <div class="card">
+    <div class="card-header"><h2 class="card-title">Customer</h2></div>
+    <div class="card-body">
+      <dl class="info-list">
+        <dt>Name</dt><dd>{{ order.customer_name }}</dd>
+        <dt>Email</dt><dd>{{ order.customer_email }}</dd>
+        <dt>Placed</dt><dd>{{ order.created_at.strftime('%B %d, %Y at %H:%M') }}</dd>
+        <dt>Total</dt><dd class="price-value">${{ "%.2f"|format(order.total_amount) }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Status update -->
+  <div class="card">
+    <div class="card-header"><h2 class="card-title">Update Status</h2></div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('orders.update_status', order_id=order.id) }}" id="status-form">
+        <div class="form-group">
+          <label for="status" class="form-label">New Status</label>
+          <select id="status" name="status" class="form-input">
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if s == order.status %}selected{% endif %}>{{ s|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" id="btn-update-status">Update</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Order items -->
+<div class="card">
+  <div class="card-header"><h2 class="card-title">Items</h2></div>
+  <table class="table" id="order-items-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Unit Price</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in order.items %}
+      <tr>
+        <td>{{ item.product.name if item.product else "Deleted product" }}</td>
+        <td>${{ "%.2f"|format(item.unit_price) }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ "%.2f"|format(item.unit_price * item.quantity) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" class="text-right"><strong>Total</strong></td>
+        <td><strong class="price-value">${{ "%.2f"|format(order.total_amount) }}</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% endblock %}

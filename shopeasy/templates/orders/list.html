@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Orders{% endblock %}
+{% block breadcrumb %}Orders{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Orders</h1>
+    <p class="page-subtitle">{{ orders|length }} order(s)</p>
+  </div>
+  <a href="{{ url_for('orders.new_order') }}" class="btn btn-primary" id="btn-new-order">+ New Order</a>
+</section>
+
+<!-- Status filter -->
+<div class="filter-bar">
+  <a href="{{ url_for('orders.list_orders') }}" class="filter-chip {% if not selected %}active{% endif %}">All</a>
+  {% for s in statuses %}
+  <a href="{{ url_for('orders.list_orders', status=s) }}" class="filter-chip filter-chip-{{ s }} {% if selected == s %}active{% endif %}">{{ s|capitalize }}</a>
+  {% endfor %}
+</div>
+
+<div class="card" style="overflow:hidden;">
+  <table class="table" id="orders-table">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Customer</th>
+        <th>Email</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td><a href="{{ url_for('orders.order_detail', order_id=o.id) }}">#{{ o.id }}</a></td>
+        <td>{{ o.customer_name }}</td>
+        <td class="text-muted">{{ o.customer_email }}</td>
+        <td>{{ o.items|length }}</td>
+        <td>${{ "%.2f"|format(o.total_amount) }}</td>
+        <td><span class="badge badge-status badge-{{ o.status }}">{{ o.status }}</span></td>
+        <td class="text-muted">{{ o.created_at.strftime('%b %d, %Y') }}</td>
+        <td>
+          <a href="{{ url_for('orders.order_detail', order_id=o.id) }}" class="btn btn-sm btn-outline">View</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty-state">No orders found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block breadcrumb %}Profile{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-title">User Profile</h1>
+    <p class="page-subtitle">Manage your profile picture</p>
+  </div>
+</section>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Profile Picture</h2>
+  </div>
+  <div class="card-body">
+    <div style="margin-bottom: 20px;">
+      {% if profile_pic %}
+        <img src="{{ url_for('profile.uploaded_file', filename=profile_pic) }}" alt="Profile Picture" style="max-width: 200px; max-height: 200px; border-radius: 50%;">
+      {% else %}
+        <div style="width: 200px; height: 200px; border-radius: 50%; background-color: #eee; display: flex; align-items: center; justify-content: center;">
+          <span style="color: #999;">No Picture</span>
+        </div>
+      {% endif %}
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('profile.view_profile') }}">
+      <div class="form-group" style="margin-bottom: 15px;">
+        <label for="profile_pic">Upload New Picture</label>
+        <input type="file" name="profile_pic" id="profile_pic" accept="image/png, image/jpeg, image/jpg" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
