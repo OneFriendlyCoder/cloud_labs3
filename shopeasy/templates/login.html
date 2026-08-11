@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+{% block breadcrumb %}Login{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1 class="page-title">Login</h1>
+    <p class="page-subtitle">Select a user profile to log in</p>
+  </div>
+</section>
+
+<div class="card" style="max-width: 400px; margin: 0 auto;">
+  <div class="card-header">
+    <h2 class="card-title">Select User</h2>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('auth.login') }}">
+      <div class="form-group" style="margin-bottom: 15px;">
+        <label for="user_id">User Profile</label>
+        <select name="user_id" id="user_id" class="form-control" required>
+          <option value="" disabled selected>Select a user...</option>
+          <option value="user1">User 1</option>
+          <option value="user2">User 2</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Log In</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

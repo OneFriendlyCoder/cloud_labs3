@@ -53,12 +53,14 @@ def create_app():
     from shopeasy.routes.orders import orders_bp
     from shopeasy.routes.api import api_bp
     from shopeasy.routes.profile import profile_bp
+    from shopeasy.routes.auth import auth_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(products_bp, url_prefix="/products")
     app.register_blueprint(orders_bp, url_prefix="/orders")
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(profile_bp)
+    app.register_blueprint(auth_bp)
 
     # Always ensure tables exist — creates an empty schema if the DB file
     # was deleted. No seeding here; run init.sh to seed product data.
